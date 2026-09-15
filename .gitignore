@@ -1,0 +1,63 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+build/
+dist/
+
+# --- Virtualenvs ---
+venv/
+.venv/
+env/
+
+# --- Secrets ---
+# .env holds real Azure keys and the DB password. Never commit it; use
+# .env.example as the template. If it ever does get committed, rotating the
+# keys is the only real fix — removing it from history is not enough.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Test / lint / type caches ---
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+junit*.xml
+
+# --- Editors / IDEs ---
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- Claude Code (machine-local settings only; shared config is committed) ---
+# .claude/settings.local.json
+.claude
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Runtime / local artifacts ---
+instance/
+*.log
+*.sqlite3
+uploads/
+
+# --- ML local artifacts ---
+mlruns/
+outputs/
+*.pkl
+*.parquet
+
+# Sample/demo data pulled from public datasets. Derived third-party content,
+# regenerable via the loader scripts — kept out of the repo deliberately.
+sample_data/
