@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Scan product label — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Scan a product label</h1>
+  <p>For order {{ order.order_number or order.id }} ({{ order.supplier_name or "Unknown supplier" }}).</p>
+</div>
+
+<div class="card">
+  <form class="drop" action="{{ url_for('labels.scan_label', order_id=order.id) }}" method="post" enctype="multipart/form-data">
+    <input type="file" name="image" accept=".png,.jpg,.jpeg,.bmp,.gif" required>
+    <button type="submit">Scan label</button>
+  </form>
+</div>
+
+<a class="back-link" href="{{ url_for('orders.get_order', order_id=order.id) }}">&larr; Back to order</a>
+{% endblock %}

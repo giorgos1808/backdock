@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Label scanned — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Label scanned</h1>
+  <p>Extracted details from the product label, matched against the order.</p>
+</div>
+
+<div class="card">
+  <div class="card__header">
+    <span class="card__icon">&#127991;</span>
+    <h2>Label details</h2>
+    {% if label.match_status == "matched" %}
+    <span class="badge badge--success">&#10003; Matched</span>
+    {% elif label.match_status == "expired" %}
+    <span class="badge badge--danger">&#9888; Expired</span>
+    {% elif label.match_status == "no_order" %}
+    <span class="badge badge--warning">No order</span>
+    {% else %}
+    <span class="badge badge--warning">Unmatched</span>
+    {% endif %}
+  </div>
+  <dl class="field-list">
+    <div class="field-row">
+      <dt>Product</dt>
+      <dd>{{ label.product_name or "Not detected — please correct" }}</dd>
+    </div>
+    <div class="field-row">
+      <dt>Expiration date</dt>
+      <dd>{{ label.expiration_date or "Not detected" }}</dd>
+    </div>
+    <div class="field-row">
+      <dt>Lot number</dt>
+      <dd>{{ label.lot_number or "Not detected" }}</dd>
+    </div>
+    <div class="field-row">
+      <dt>Match score</dt>
+      <dd>{{ label.match_score }}</dd>
+    </div>
+  </dl>
+</div>
+
+<a class="back-link" href="{{ url_for('orders.get_order', order_id=label.order_id) }}">&larr; Back to order</a>
+{% endblock %}

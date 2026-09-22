@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Image labels — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Labels per image</h1>
+  <p>Tags detected by Azure AI Vision for each scanned image, most confident first.</p>
+</div>
+
+{% if scans %}
+<div class="label-list">
+  {% for scan in scans %}
+  <a class="card label-card" href="{{ url_for('scans.view_scan', scan_id=scan.id) }}">
+    <div class="label-card__thumb">
+      <img src="{{ url_for('scans.get_scan_image', scan_id=scan.id) }}" alt="{{ scan.source_filename }}" loading="lazy">
+    </div>
+    <div class="label-card__body">
+      <h2>{{ scan.source_filename }}</h2>
+      {% if scan.caption %}
+      <p>{{ scan.caption }}</p>
+      {% endif %}
+      {% if scan.tags %}
+      <div class="tag-list">
+        {% for tag in scan.tags %}
+        <span class="badge badge--neutral">{{ tag.name }} <span class="tag-confidence">{{ (tag.confidence * 100) | round | int }}%</span></span>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="label-card__empty">No labels detected for this image.</p>
+      {% endif %}
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card">
+  <div class="empty-state">No images scanned yet. Scan an image to see its labels here.</div>
+</div>
+{% endif %}
+{% endblock %}
