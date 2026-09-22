@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Gallery — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Uploaded images</h1>
+  <p>Every image and document scanned so far — image scans, supplier orders, and product labels — newest first.</p>
+</div>
+
+{% if uploads %}
+<div class="gallery-grid">
+  {% for item in uploads %}
+  <a class="gallery-card" href="{{ item.url }}" target="_blank" rel="noopener">
+    <div class="gallery-thumb">
+      {% if item.is_image %}
+      <img src="{{ item.url }}" alt="{{ item.title }}" loading="lazy">
+      {% else %}
+      <span class="gallery-doc">&#128196;</span>
+      {% endif %}
+      <span class="badge badge--neutral gallery-kind">{{ item.kind }}</span>
+    </div>
+    <div class="gallery-meta">
+      <span class="gallery-title">{{ item.title }}</span>
+      <span class="gallery-subtitle">{{ item.subtitle }}</span>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card">
+  <div class="empty-state">Nothing uploaded yet. Scan an image, order, or label to see it here.</div>
+</div>
+{% endif %}
+{% endblock %}

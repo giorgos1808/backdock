@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Backdock{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script>
+    (function () {
+      var stored = null;
+      try { stored = localStorage.getItem("theme"); } catch (e) {}
+      if (stored === "dark" || stored === "light") {
+        document.documentElement.setAttribute("data-theme", stored);
+      }
+    })();
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap site-header__inner">
+      <a class="brand" href="{{ url_for('pages.index') }}">
+        <span class="brand__mark">BD</span>
+        <span class="brand__name">Backdock</span>
+      </a>
+      <nav class="site-nav">
+        <a href="{{ url_for('pages.index') }}" {% if request.endpoint == 'pages.index' %}aria-current="page"{% endif %}>Dashboard</a>
+        <a href="{{ url_for('orders.list_orders') }}" {% if request.endpoint in ('orders.list_orders', 'orders.get_order') %}aria-current="page"{% endif %}>Orders</a>
+        <a href="{{ url_for('orders.scan_order') }}" {% if request.endpoint == 'orders.scan_order' %}aria-current="page"{% endif %}>Scan order</a>
+        <a href="{{ url_for('pages.gallery') }}" {% if request.endpoint == 'pages.gallery' %}aria-current="page"{% endif %}>Gallery</a>
+        <a href="{{ url_for('scans.scan_labels') }}" {% if request.endpoint and request.endpoint.startswith('scans.') %}aria-current="page"{% endif %}>Image tags</a>
+        <a href="{{ url_for('products.forecasts_page') }}" {% if request.endpoint and request.endpoint.startswith('products.') %}aria-current="page"{% endif %}>Forecasts</a>
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark theme">
+          <span class="theme-toggle__icon theme-toggle__icon--sun">&#9728;</span>
+          <span class="theme-toggle__icon theme-toggle__icon--moon">&#9789;</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap page">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap site-footer__inner">
+      <span>Backdock &mdash; powered by Azure AI Vision &amp; Document Intelligence</span>
+      {% block footer_extra %}{% endblock %}
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var toggle = document.getElementById("theme-toggle");
+      var mql = window.matchMedia("(prefers-color-scheme: dark)");
+
+      function current() {
+        var stored = null;
+        try { stored = localStorage.getItem("theme"); } catch (e) {}
+        return stored || (mql.matches ? "dark" : "light");
+      }
+
+      toggle.addEventListener("click", function () {
+        var next = current() === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem("theme", next); } catch (e) {}
+      });
+    })();
+  </script>
+</body>
+</html>

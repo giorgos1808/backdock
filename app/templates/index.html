@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Scan, extract, reconcile</h1>
+  <p>Turn supplier orders and product labels into structured data with Azure AI, then check what was ordered against what actually arrived.</p>
+</div>
+
+<div class="card-grid">
+  <div class="card">
+    <div class="card__header">
+      <span class="card__icon">&#128230;</span>
+      <h2>Scan a supplier order</h2>
+    </div>
+    <p>Upload the order document you received from a supplier. Line items — product, quantity, price — are extracted automatically.</p>
+    <a class="btn" href="{{ url_for('orders.scan_order') }}">Scan an order &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="card__header">
+      <span class="card__icon">&#128203;</span>
+      <h2>View scanned orders</h2>
+    </div>
+    <p>Browse every order that has been scanned so far, along with its reconciliation status against received labels.</p>
+    <a class="btn" href="{{ url_for('orders.list_orders') }}">View orders &rarr;</a>
+  </div>
+</div>
+
+<div class="card" id="image-scanner" style="margin-top: 1.5rem;">
+  <div class="card__header">
+    <span class="card__icon">&#128247;</span>
+    <h2>Image Scanner (Azure AI Vision)</h2>
+  </div>
+  <p>Upload any image to analyze it with the Azure AI Vision Image Analysis service. The full response is saved as JSON on the server.</p>
+  <form class="drop" action="{{ url_for('scans.scan') }}" method="post" enctype="multipart/form-data">
+    <input type="file" name="image" accept=".png,.jpg,.jpeg,.bmp,.gif" required>
+    <button type="submit">Scan image</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block footer_extra %}
+<span>API: POST <code>image</code> to <code>/scan</code> with <code>Accept: application/json</code></span>
+{% endblock %}
