@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Forecasts — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Forecasts</h1>
+  <p>Predicted order quantities for every product, and how those predictions trend over time.</p>
+</div>
+
+<div class="card-grid">
+  <div class="card">
+    <div class="card__header">
+      <span class="card__icon">&#128202;</span>
+      <h2>Demand forecasts</h2>
+    </div>
+    <p>Every product's latest predicted quantity, generated from a rolling average of recent orders. Generate a new forecast for any product with order history.</p>
+    <a class="btn" href="{{ url_for('products.forecasts_table') }}">View table &rarr;</a>
+  </div>
+
+  <div class="card">
+    <div class="card__header">
+      <span class="card__icon">&#128200;</span>
+      <h2>Dashboard</h2>
+    </div>
+    <p>Track how one product's forecast has changed over time, filterable by product.</p>
+    <a class="btn" href="{{ url_for('products.forecasts_dashboard') }}">View dashboard &rarr;</a>
+  </div>
+</div>
+{% endblock %}

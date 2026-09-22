@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Forecast dashboard — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Forecast dashboard</h1>
+  <p>How a product's predicted order quantity has changed over time, forecast by forecast.</p>
+</div>
+
+<div class="card">
+  <form method="get" class="dashboard-filter">
+    <label for="product_id">Product</label>
+    <select name="product_id" id="product_id" onchange="this.form.submit()">
+      {% for product in products %}
+      <option value="{{ product.id }}" {% if product.id == selected_id %}selected{% endif %}>{{ product.canonical_name }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+{% if chart %}
+<div class="card" style="margin-top: 1.5rem;">
+  <div class="card__header">
+    <span class="card__icon">&#128200;</span>
+    <h2>{{ selected_product.canonical_name }}</h2>
+  </div>
+  <p class="text-muted" style="margin: -0.5rem 0 0.5rem;">
+    Range: {{ "%.2f" | format(chart.min_value) }}–{{ "%.2f" | format(chart.max_value) }}{% if selected_product.unit_of_measure %} {{ selected_product.unit_of_measure }}{% endif %}
+    across {{ chart.points | length }} forecast{{ "s" if chart.points | length != 1 else "" }}
+  </p>
+  <svg class="forecast-chart" viewBox="0 0 {{ chart.width }} {{ chart.height }}" preserveAspectRatio="none">
+    <polyline points="{{ chart.polyline }}" />
+    {% for point in chart.points %}
+    <circle cx="{{ point.x }}" cy="{{ point.y }}" r="4">
+      <title>{{ point.label }}: {{ "%.2f" | format(point.value) }}</title>
+    </circle>
+    {% endfor %}
+  </svg>
+  <div class="chart-axis">
+    <span>{{ chart.points[0].label }} &middot; {{ "%.2f" | format(chart.points[0].value) }}{% if selected_product.unit_of_measure %} {{ selected_product.unit_of_measure }}{% endif %}</span>
+    <span>{{ chart.points[-1].label }} &middot; {{ "%.2f" | format(chart.points[-1].value) }}{% if selected_product.unit_of_measure %} {{ selected_product.unit_of_measure }}{% endif %}</span>
+  </div>
+</div>
+{% elif selected_product %}
+<div class="card" style="margin-top: 1.5rem;">
+  <div class="empty-state">No forecast history yet for {{ selected_product.canonical_name }}. Generate one from the <a href="{{ url_for('products.forecasts_table') }}">Demand forecasts</a> table.</div>
+</div>
+{% else %}
+<div class="card" style="margin-top: 1.5rem;">
+  <div class="empty-state">No products yet. Scan a supplier order to start building product history.</div>
+</div>
+{% endif %}
+
+<a class="back-link" href="{{ url_for('products.forecasts_page') }}">&larr; Back to forecasts</a>
+{% endblock %}

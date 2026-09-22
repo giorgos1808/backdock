@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Forecasts — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Demand forecasts</h1>
+  <p>Predicted order quantity per product, based on a rolling average of recent order history.</p>
+</div>
+
+{% if rows %}
+<div class="card">
+  <div class="table-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Category</th>
+        <th>Predicted quantity</th>
+        <th>Method</th>
+        <th>Last forecast</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row.product.canonical_name }}</td>
+        <td>{{ row.product.category or "—" }}</td>
+        <td>
+          {% if row.forecast %}
+          {{ "%.2f" | format(row.forecast.predicted_quantity) }}{% if row.product.unit_of_measure %} {{ row.product.unit_of_measure }}{% endif %}
+          {% else %}
+          &mdash;
+          {% endif %}
+        </td>
+        <td>
+          {% if row.forecast %}
+          <span class="badge badge--neutral">{{ row.forecast.method }}</span>
+          {% else %}
+          No forecast yet
+          {% endif %}
+        </td>
+        <td>{{ row.forecast.predicted_at[:16] | replace("T", " ") if row.forecast else "—" }}</td>
+        <td>
+          {% if row.has_history %}
+          <form method="post" action="{{ url_for('products.create_forecast', product_id=row.product.id) }}">
+            <button type="submit" class="btn btn--small">Generate forecast</button>
+          </form>
+          {% else %}
+          <span class="text-muted">No order history</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% else %}
+<div class="card">
+  <div class="empty-state">No products yet. Scan a supplier order to start building product history.</div>
+</div>
+{% endif %}
+
+<a class="back-link" href="{{ url_for('products.forecasts_page') }}">&larr; Back to forecasts</a>
+{% endblock %}
