@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{ scan.source_filename }} — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>{{ scan.source_filename }}</h1>
+  {% if scan.caption %}
+  <p>{{ scan.caption }}</p>
+  {% endif %}
+</div>
+
+<div class="card-grid">
+  <div class="card">
+    <div class="card__header">
+      <span class="card__icon">&#128247;</span>
+      <h2>Image</h2>
+    </div>
+    <img class="scan-detail__image" src="{{ url_for('scans.get_scan_image', scan_id=scan.id) }}" alt="{{ scan.source_filename }}">
+  </div>
+
+  <div class="card">
+    <div class="card__header">
+      <span class="card__icon">&#127991;</span>
+      <h2>Labels</h2>
+    </div>
+    {% if scan.tags %}
+    <div class="tag-list">
+      {% for tag in scan.tags %}
+      <span class="badge badge--neutral">{{ tag.name }} <span class="tag-confidence">{{ (tag.confidence * 100) | round | int }}%</span></span>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>No labels detected for this image.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card" style="margin-top: 1.5rem;">
+  <div class="card__header">
+    <span class="card__icon">&#128269;</span>
+    <h2>Detected text (OCR)</h2>
+  </div>
+  {% if lines %}
+  <ol class="ocr-lines">
+    {% for line in lines %}
+    <li>{{ line }}</li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <div class="empty-state">No text detected in this image.</div>
+  {% endif %}
+</div>
+
+<div class="card" style="margin-top: 1.5rem;">
+  <div class="card__header">
+    <span class="card__icon">&#9989;</span>
+    <h2>Reviewed text</h2>
+  </div>
+  {% if review %}
+  <p class="empty-state" style="padding: 0 0 1rem;">Last reviewed {{ review.reviewed_at }}</p>
+  {% endif %}
+  <form method="post" action="{{ url_for('scans.review_scan', scan_id=scan.id) }}">
+    <textarea name="lines" class="review-textarea" rows="8">{{ (review.lines if review else lines) | join('\n') }}</textarea>
+    <button type="submit" class="btn">Save reviewed text</button>
+  </form>
+</div>
+
+<a class="back-link" href="{{ url_for('scans.scan_labels') }}">&larr; Back to labels</a>
+{% endblock %}

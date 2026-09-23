@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Scan complete — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Scan complete</h1>
+  <p>Saved as <code>{{ response.id }}</code></p>
+</div>
+
+<div class="card">
+  <div class="card__header">
+    <span class="card__icon">&#128269;</span>
+    <h2>Detected text</h2>
+  </div>
+  {% if response.lines %}
+  <ol class="ocr-lines">
+    {% for line in response.lines %}
+    <li>{{ line }}</li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <div class="empty-state">No text detected in this image.</div>
+  {% endif %}
+</div>
+
+<div class="card" style="margin-top: 1.5rem;">
+  <div class="card__header">
+    <span class="card__icon">&#9989;</span>
+    <h2>Check the text</h2>
+  </div>
+  <p>Correct anything OCR got wrong, then save your reviewed version below.</p>
+  <form method="post" action="{{ url_for('scans.review_scan', scan_id=response.id) }}">
+    <textarea name="lines" class="review-textarea" rows="8">{{ response.lines | join('\n') }}</textarea>
+    <button type="submit" class="btn">Save reviewed text</button>
+  </form>
+</div>
+
+<a class="back-link" href="{{ url_for('pages.index') }}">&larr; Scan another image</a>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Review saved — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Review saved</h1>
+  <p>Reviewed text for scan <code>{{ scan_id }}</code>.</p>
+</div>
+
+<div class="card">
+  <div class="card__header">
+    <span class="card__icon">&#9989;</span>
+    <h2>Reviewed text</h2>
+  </div>
+  {% if review.lines %}
+  <ol class="ocr-lines">
+    {% for line in review.lines %}
+    <li>{{ line }}</li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <div class="empty-state">Saved with no text lines.</div>
+  {% endif %}
+</div>
+
+<a class="back-link" href="{{ url_for('scans.view_scan', scan_id=scan_id) }}">&larr; Back to scan</a>
+{% endblock %}
