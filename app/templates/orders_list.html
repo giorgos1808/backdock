@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Orders — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Supplier orders</h1>
+  <p>Every order scanned so far, with its reconciliation status against received labels.</p>
+</div>
+
+{% if rows %}
+<div class="card">
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Supplier</th>
+          <th>Order date</th>
+          <th>Items</th>
+          <th>Status</th>
+          <th>Scanned</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td><a href="{{ url_for('orders.get_order', order_id=row.order.id) }}">{{ row.order.order_number or row.order.id }}</a></td>
+          <td>{{ row.order.supplier_name or "Unknown supplier" }}</td>
+          <td>{{ row.order.order_date.isoformat() if row.order.order_date else "—" }}</td>
+          <td>{{ row.reconciliation.total_items }}</td>
+          <td><span class="badge badge--{{ row.status.tone }}">{{ row.status.label }}</span></td>
+          <td>{{ row.order.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if pagination.pages > 1 %}
+  <div class="pagination">
+    {% if pagination.has_prev %}
+    <a class="btn btn--small" href="{{ url_for('orders.list_orders', page=pagination.prev_num) }}">&larr; Newer</a>
+    {% endif %}
+    <span class="text-muted">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+    {% if pagination.has_next %}
+    <a class="btn btn--small" href="{{ url_for('orders.list_orders', page=pagination.next_num) }}">Older &rarr;</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% else %}
+<div class="card">
+  <div class="empty-state">No orders scanned yet. <a href="{{ url_for('orders.scan_order') }}">Scan a supplier order</a> to get started.</div>
+</div>
+{% endif %}
+
+<a class="back-link" href="{{ url_for('pages.index') }}">&larr; Back to dashboard</a>
+{% endblock %}

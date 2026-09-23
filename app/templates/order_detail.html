@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}{{ order.order_number or order.id }} — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>{{ order.supplier_name or "Unknown supplier" }}</h1>
+  <p>Order {{ order.order_number or order.id }} &middot; scanned {{ order.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
+</div>
+
+<div class="card">
+  <div class="card__header">
+    <span class="card__icon" aria-hidden="true">&#128203;</span>
+    <h2>Line items</h2>
+    <span class="badge badge--{{ status.tone }}">{{ status.label }}</span>
+  </div>
+  {% if order.items %}
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Product</th><th>Qty</th><th>Unit price</th></tr></thead>
+      <tbody>
+        {% for item in order.items %}
+        <tr><td>{{ item.product_name }}</td><td>{{ item.quantity }}</td><td>{{ item.unit_price }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">No line items were detected on this order.</div>
+  {% endif %}
+</div>
+
+<div class="card" style="margin-top: 1.5rem;">
+  <div class="card__header">
+    <span class="card__icon" aria-hidden="true">&#127991;</span>
+    <h2>Received labels</h2>
+  </div>
+  {% if order.labels %}
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Product</th><th>Expiration</th><th>Lot</th><th>Match</th></tr></thead>
+      <tbody>
+        {% for label in order.labels %}
+        <tr>
+          <td>{{ label.product_name or "Not detected" }}</td>
+          <td>{{ label.expiration_date.isoformat() if label.expiration_date else "—" }}</td>
+          <td>{{ label.lot_number or "—" }}</td>
+          <td>
+            {% if label.match_status == "matched" %}
+            <span class="badge badge--success">&#10003; Matched</span>
+            {% elif label.match_status == "expired" %}
+            <span class="badge badge--danger">&#9888; Expired</span>
+            {% elif label.match_status == "no_order" %}
+            <span class="badge badge--warning">No order</span>
+            {% else %}
+            <span class="badge badge--warning">Unmatched</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">No labels received yet for this order.</div>
+  {% endif %}
+  <a class="btn" style="margin-top: 1rem;" href="{{ url_for('labels.scan_label', order_id=order.id) }}">Scan a received label &rarr;</a>
+</div>
+
+<a class="back-link" href="{{ url_for('orders.list_orders') }}">&larr; Back to orders</a>
+{% endblock %}

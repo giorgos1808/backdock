@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Order scanned — Backdock{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Order scanned</h1>
+  <p>{{ order.supplier_name or "Unknown supplier" }} &mdash; order {{ order.order_number or order.id }}</p>
+</div>
+
+<div class="card">
+  <div class="card__header">
+    <span class="card__icon">&#128203;</span>
+    <h2>Line items</h2>
+  </div>
+  {% if order['items'] %}
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Product</th><th>Qty</th><th>Unit price</th></tr></thead>
+      <tbody>
+        {% for item in order['items'] %}
+        <tr><td>{{ item.product_name }}</td><td>{{ item.quantity }}</td><td>{{ item.unit_price }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">No line items were detected on this order.</div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <div class="card__header">
+    <span class="card__icon">&#127991;</span>
+    <h2>Received a shipment for this order?</h2>
+  </div>
+  <p>Scan the product label on arrival to check it against what was ordered.</p>
+  <a class="btn" href="{{ url_for('labels.scan_label', order_id=order.id) }}">Scan a received label &rarr;</a>
+</div>
+
+<a class="back-link" href="{{ url_for('pages.index') }}">&larr; Back to dashboard</a>
+{% endblock %}
