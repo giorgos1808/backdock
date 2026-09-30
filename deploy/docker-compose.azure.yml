@@ -1,0 +1,29 @@
+# ssh -N -L 5433:psql-crm-dev-1qom63.postgres.database.azure.com:5432 azureuser@<jumpbox-ip>
+
+# docker compose -f deploy/docker-compose.azure.yml up --build
+name: backdock_azure
+services:
+  migrate:
+    build:
+      context: ..
+      target: web
+    env_file:
+      - ../.env
+    environment:
+      DATABASE_URL: postgresql+psycopg://crmadmin:${AZURE_DB_PASSWORD}@host.docker.internal:5433/image_scanner?sslmode=require
+    command: ["flask", "db", "upgrade"]
+    restart: "no"
+
+  app:
+    build:
+      context: ..
+      target: web
+    env_file:
+      - ../.env
+    environment:
+      DATABASE_URL: postgresql+psycopg://crmadmin:${AZURE_DB_PASSWORD}@host.docker.internal:5433/image_scanner?sslmode=require
+    ports:
+      - "5001:5000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
