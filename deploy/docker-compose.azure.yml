@@ -1,4 +1,4 @@
-# ssh -N -L 5433:psql-crm-dev-1qom63.postgres.database.azure.com:5432 azureuser@<jumpbox-ip>
+# ssh -N -L 5433:psql-crm-dev-<suffix>.postgres.database.azure.com:5432 azureuser@<jumpbox-ip>
 
 # docker compose -f deploy/docker-compose.azure.yml up --build
 name: backdock_azure
