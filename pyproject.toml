@@ -1,0 +1,35 @@
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["venv", ".venv", "migrations/versions", "terraform"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort — import ordering
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "C4",  # flake8-comprehensions
+]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"ml/components/train/train.py" = ["E402", "I001"]
+"ml/components/evaluate/evaluate.py" = ["E402", "I001"]
+"migrations/env.py" = ["E402", "F401", "I001"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-markers"
+markers = ["integration: needs a real Postgres (and possibly Azure) — skipped by default in CI"]
+filterwarnings = ["error::DeprecationWarning:app.*"]
+
+[tool.coverage.run]
+source = ["app", "ml", "scripts"]
+omit = ["*/migrations/*", "*/tests/*"]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]
